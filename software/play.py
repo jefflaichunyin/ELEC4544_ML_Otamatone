@@ -1,7 +1,7 @@
 from driver import Otamatone, Otamatone_State
 from midi import Midi
-
-o = Otamatone('/dev/ttyUSB0')
+import sys
+o = Otamatone(sys.argv[1])
 m= Midi()
 prev_pos = 0
 
