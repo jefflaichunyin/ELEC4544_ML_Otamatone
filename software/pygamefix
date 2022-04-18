@@ -1,0 +1,2 @@
+cd /usr/lib
+sudo ln -s x86_64-linux-gnu/alsa-lib alsa-lib
