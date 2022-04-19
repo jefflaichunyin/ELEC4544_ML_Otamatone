@@ -22,7 +22,7 @@ class Midi:
         
     def stop(self):
         if self.playing != 0:
-            print("stop", self.playing)
+            # print("stop", self.playing)
             self.out.note_off(self.playing, 127)
 
     def bend(self, v):
