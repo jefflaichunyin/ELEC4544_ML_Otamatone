@@ -14,6 +14,12 @@ class Midi:
         print("play", self.playing)
         self.out.note_on(self.playing, 127)
 
+    def play_note(self, note):
+        self.stop()
+        self.playing = note
+        print("play", self.playing)
+        self.out.note_on(self.playing, 127)
+        
     def stop(self):
         if self.playing != 0:
             print("stop", self.playing)
