@@ -36,5 +36,6 @@ void loop() {
     last_fall = now;
     dt = 0;
   }
+  // Serial.println(dt);
   Serial.write((uint8_t*)&dt, 2);
 }

@@ -5,6 +5,9 @@ o = Otamatone(sys.argv[1])
 m= Midi(int(sys.argv[2]))
 prev_pos = 0
 
+def _map(x, in_min, in_max, out_min, out_max):
+    return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+
 def clamp(a, minimum, maximum):
     return max(minimum, min(a,maximum))
 
@@ -12,7 +15,7 @@ while True:
     state, value = o.read()
     if state == Otamatone_State.PRESS:
         print("pressed", value)
-        m.play(value / 10)
+        m.play(_map(value, 400, 6000, 200, 2000))
     elif state == Otamatone_State.RELEASE:
         print("release")
         m.stop()
