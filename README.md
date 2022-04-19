@@ -1,4 +1,4 @@
 # COMP4544_Otamatone
 
 - Dependencies
-```pip install pygame```
+```pip install pygame numpy matplotlib```
