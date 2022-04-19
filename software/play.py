@@ -2,7 +2,7 @@ from driver import Otamatone, Otamatone_State
 from midi import Midi
 import sys
 o = Otamatone(sys.argv[1])
-m= Midi()
+m= Midi(int(sys.argv[2]))
 prev_pos = 0
 
 def clamp(a, minimum, maximum):

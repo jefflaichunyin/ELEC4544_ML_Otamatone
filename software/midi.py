@@ -2,10 +2,10 @@ import pygame.midi as midi
 
 class Midi:
 
-    def __init__(self) -> None:
+    def __init__(self, dev_id) -> None:
         midi.init()
-        self.out = midi.Output(2)
-        self.out.set_instrument(31)
+        self.out = midi.Output(dev_id)
+        self.out.set_instrument(57)
         self.playing = 0
 
     def play(self, freq):
