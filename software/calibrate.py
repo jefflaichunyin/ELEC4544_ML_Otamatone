@@ -12,7 +12,9 @@ target_note = [60,62,64,65,67,69,71,72]
 number_of_pass = 3
 tone_cnt = 8
 
-cal_res = [[0 for _ in range(8)] for __ in range(number_of_pass)]
+position = []
+label = []
+
 for p in range(number_of_pass):
     print("\npass", p + 1)
 
@@ -22,10 +24,15 @@ for p in range(number_of_pass):
         state, value = o.read()
         while state != Otamatone_State.PRESS:
             state, value = o.read()
-        cal_res[p][i] = value
+        
+        position += [value]
+        label += [target_note[i]]
+
         m.stop()
 
-cal_res = np.array(cal_res).T
-y =  [([x]*number_of_pass) for x in range(tone_cnt)]
-plt.scatter(cal_res, y)
+position = np.array(position)
+label = np.array(label)
+np.savetxt('calibration_data.csv', (position, label), fmt='%i', delimiter=',')
+
+plt.scatter(position, label)
 plt.show()
