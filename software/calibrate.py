@@ -9,7 +9,7 @@ o = Otamatone(sys.argv[1])
 m= Midi(int(sys.argv[2]))
 
 target_note = [60,62,64,65,67,69,71,72]
-number_of_pass = 3
+number_of_pass = 30
 tone_cnt = 8
 
 position = []
