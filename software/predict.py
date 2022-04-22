@@ -1,6 +1,12 @@
-import mido
-import sys
-o = Otamatone(sys.argv[1])
-m= Midi(int(sys.argv[2]))
-f = mido.MidiFile(sys.argv[3])
-notes = list(map(lambda x: x.note, filter(lambda x : x.velocity == 80, m.tracks[0][11:-1])))
+from sklearn import svm
+import numpy as np
+class Note_Predictor:
+
+    def __init__(self, training_data) -> None:
+        samples, labels = np.loadtxt('recorder_fingering_test.csv', delimiter=',', dtype=int)
+        clf = svm.SVC()
+        clf.fit(samples.reshape(-1,1), labels)
+        self.clf = clf
+
+    def predict_note(self, position):
+        return self.clf.predict([[position]])[0]
