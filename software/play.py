@@ -15,6 +15,7 @@ def _map(x, in_min, in_max, out_min, out_max):
 def clamp(a, minimum, maximum):
     return max(minimum, min(a,maximum))
 
+print("Ready")
 while True:
     state, value = o.read()
     if state == Otamatone_State.PRESS:
