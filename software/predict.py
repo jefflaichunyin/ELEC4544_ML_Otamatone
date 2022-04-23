@@ -28,6 +28,9 @@ class Note_Predictor:
         self.midi_notes = list(map(lambda x: x.note, filter(lambda x : x.velocity == 80, f.tracks[0][11:-1])))
         self.init_decision_tree()
 
+    def reset_state(self):
+        self.seq = [0 for x in range(self.win_size_max)]
+        
     def push_prediction(self, note):
         # self.seq.pop(-1)
         # self.seq = [note] + self.seq
