@@ -12,7 +12,7 @@ class Otamatone_State(Enum):
 class Otamatone:
 
     STABLE_COUNTDOWN = 32
-    RELEASE_COUNTDOWN = 32
+    RELEASE_COUNTDOWN = 8
     AVG_WINDOW = 1/4 # start averaging at STABLE_COUNTDOWN * (1-AVG_WiNDOW)
 
     def __init__(self, port):
@@ -48,7 +48,10 @@ class Otamatone:
             else:
                 if self.release_cnt:
                     self.release_cnt -= 1
-                    return (Otamatone_State.HOLD, (self.pos[0], self.pos[0]))
+                    if self.pos[0] > 0:
+                        return (Otamatone_State.HOLD, (self.pos[0], pos))
+                    else:
+                        return (Otamatone_State.IDLE, 0)
                 else:
                     # released
                     self.stable_cnt = self.STABLE_COUNTDOWN

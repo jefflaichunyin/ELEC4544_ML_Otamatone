@@ -18,7 +18,7 @@ collected_valid_data = False
 while not collected_valid_data:
     # Part 1. collect position for notes in an octave
     target_note = [60,62,64,65,67,69,71,72]
-    number_of_pass = 5
+    number_of_pass = 30
     tone_cnt = 8
 
     position = []
@@ -86,7 +86,7 @@ while not collected_valid_data:
 
     # Part 3. Ask user to decide re-collect, remove bad sample or ignore them
     if len(mispredicted):
-        print('Mismatch between predicted and acutal note')
+        print('Detected mismatch between predicted and acutal note')
         choice = int(input('(1) Re-collect, (2) Remove mismatch notes, (3) Ignore mismatch notes: '))
         if choice == 1:
             collected_valid_data = False
