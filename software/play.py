@@ -1,8 +1,10 @@
+import queue
 from driver import Otamatone, Otamatone_State
 from predict import Note_Predictor
 from visualizer import Visualizer
 
 from threading import Thread
+from queue import Queue
 from midi import Midi
 import numpy as np
 import sys
@@ -12,7 +14,7 @@ TIMEOUT = 3
 
 running = True
 notes = [60,62,64,65,67,69,71,72]
-
+press_queue = Queue()
 res_prob = [0 for _ in range(len(notes))]
 nn_prob = [0 for _ in range(len(notes))]
 dt_prob = [0 for _ in range(len(notes))]
@@ -32,7 +34,11 @@ v = Visualizer()
 def plot_thread():
     v.start()
     while v.running:
-        v.plot(p.seq, res_prob, nn_prob, dt_prob)
+        try:
+            press_queue.get(timeout=0.01)
+        except:
+            pass
+        v.plot(p.pos_hist, res_prob, nn_prob, dt_prob)
 
 def clamp(a, minimum, maximum):
     return max(minimum, min(a,maximum))
@@ -51,6 +57,7 @@ while v.running:
         note = notes[predicted]
         p.push_prediction(note)
         m.play_note(note)
+        press_queue.put(None)
         # v.plot(p.seq, res_prob, nn_prob, dt_prob)
     elif state == Otamatone_State.RELEASE:
         prev_press = time.time()

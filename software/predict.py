@@ -26,6 +26,7 @@ class Note_Predictor:
     # predict with NN
     def __init__(self, nn_model = None, midi_file = None) -> None:
         self.win_size_max = 3
+        self.pos_hist = [0 for x in range(self.win_size_max)]
         self.seq = [0 for x in range(self.win_size_max)]
         self.nn = None
         self.dt = None
@@ -56,7 +57,8 @@ class Note_Predictor:
 
     def reset_state(self):
         self.seq = [0 for x in range(self.win_size_max)]
-
+        self.pos_hist = [0 for x in range(self.win_size_max)]
+        
     def push_prediction(self, note):
         # self.seq.pop(-1)
         # self.seq = [note] + self.seq
@@ -72,7 +74,9 @@ class Note_Predictor:
         res_prob = [0 for _ in range(len(notes))]
         nn_prob = [0 for _ in range(len(notes))]
         dt_prob = [0 for _ in range(len(notes))]
-
+        self.pos_hist.pop(0)
+        self.pos_hist = self.pos_hist + [position] 
+        print(self.pos_hist)
         if self.nn is None:
             predicted = _map(position, 1000, 6000, 0, 7)
             ln_prob = [0 for _ in range(8)]
@@ -97,4 +101,4 @@ class Note_Predictor:
             nn_prob = self.nn.predict([position])[0]
             res_prob = dt_prob * nn_prob
 
-        return (self.seq, res_prob, nn_prob, dt_prob)
+        return (self.pos_hist, res_prob, nn_prob, dt_prob)

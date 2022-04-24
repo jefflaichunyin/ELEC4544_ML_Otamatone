@@ -9,16 +9,20 @@ class Visualizer:
         self.notes = [60,62,64,65,67,69,71,72]
         fig, ax = plt.subplots(2, 2, figsize=(15, 10))
         fig.canvas.mpl_connect('close_event', self.on_close)
+        mng = plt.get_current_fig_manager()
+        mng.full_screen_toggle()
         pos, res, nn, dt = (ax[0,0], ax[0,1], ax[1,0], ax[1,1])
-        pos.set_yticks(self.notes)
-        pos.set_ylim(55, 75)
+        pos.set_ylim(800, 6000)
         pos.set_title('Position Input')
         res.set_title('Prediction result')
-        res.set_ylim(0,1.1)
+        res.set_xticks(self.notes)
+        res.set_ylim(-0.1,1.1)
         nn.set_title('NN prediction')
-        nn.set_ylim(0,1.1)
+        nn.set_ylim(-0.1,1.1)
+        nn.set_xticks(self.notes)
         dt.set_title('Decision Tree prediction')
-        dt.set_ylim(0,1.1)
+        dt.set_ylim(-0.1,1.1)
+        dt.set_xticks(self.notes)
 
         res.set(xlabel='Note', ylabel='Probability')
         nn.set(xlabel='Note', ylabel='Probability')
@@ -35,8 +39,7 @@ class Visualizer:
         self.running = False
 
     def draw(self):
-        plt.draw()
-        plt.pause(0.01)
+        plt.show()
 
     def plot(self, seq, res_prob, nn_prob, dt_prob):
         ax = self.ax
