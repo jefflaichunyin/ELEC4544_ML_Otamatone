@@ -1,8 +1,9 @@
 from sklearn import svm
 from keras.models import load_model
 import numpy as np
-from sklearn import preprocessing, tree
+from sklearn import tree
 import mido
+
 
 def _map(x, in_min, in_max, out_min, out_max):
     return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
@@ -68,19 +69,19 @@ class Note_Predictor:
 
     def predict_note(self, position):
         notes = [60,62,64,65,67,69,71,72]
+        res_prob = [0 for _ in range(len(notes))]
+        nn_prob = [0 for _ in range(len(notes))]
+        dt_prob = [0 for _ in range(len(notes))]
+
         if self.nn is None:
             predicted = _map(position, 1000, 6000, 0, 7)
             ln_prob = [0 for _ in range(8)]
             ln_prob[predicted] = 1.0
-            ln_prob = np.array(ln_prob)
-            print('predict with NN', np.array_str(ln_prob, precision=2))
-            note = notes[predicted]
+            res_prob = np.array(ln_prob)
         elif self.dt is None or sum(self.seq) == 0:
             # no history yet, rely on NN solely
-            nn_prob = self.nn.predict([position])
-            print('predict with linear map', np.array_str(nn_prob, precision=2))
-            predicted = np.argmax(nn_prob)
-            note = notes[predicted]
+            nn_prob = self.nn.predict([position])[0]
+            res_prob = nn_prob
         else:
             # use decision tree to help
             dt_prob = [0 for _ in range(len(notes))]
@@ -94,12 +95,6 @@ class Note_Predictor:
 
             dt_prob = np.array(dt_prob)
             nn_prob = self.nn.predict([position])[0]
-            cm_prob = dt_prob * nn_prob
-            print(self.seq)
-            print('DT prediction', np.array_str(dt_prob, precision=2))
-            print('NN prediction', np.array_str(nn_prob, precision=2))
-            print('Combined prediction', np.array_str(cm_prob, precision=2))
-            note = notes[np.argmax(cm_prob)]
+            res_prob = dt_prob * nn_prob
 
-        self.push_prediction(note)
-        return note
+        return (self.seq, res_prob, nn_prob, dt_prob)
