@@ -1,5 +1,6 @@
 from driver import Otamatone, Otamatone_State
 from midi import Midi
+from predict import Note_Predictor
 import sys
 import time
 
@@ -7,20 +8,24 @@ TIMEOUT = 3
 o = Otamatone(sys.argv[1])
 m= Midi(int(sys.argv[2]))
 
-def _map(x, in_min, in_max, out_min, out_max):
-    return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+nn_model = None
+midi_file = None
+if len(sys.argv) > 3:
+    nn_model =  sys.argv[3]
+if len(sys.argv) > 4:
+    midi_file = sys.argv[4]
+p = Note_Predictor(nn_model, midi_file)
 
 def clamp(a, minimum, maximum):
     return max(minimum, min(a,maximum))
 
-print('Playing Otamatone with L0 prediction')
 print("Ready")
 prev_press = time.time()
 while True:
     state, value = o.read()
     if state == Otamatone_State.PRESS:
         print("pressed", value)
-        m.play_note(_map(value, 1000, 6000, 60, 72))
+        m.play_note(p.predict_note(value))
     elif state == Otamatone_State.RELEASE:
         prev_press = time.time()
         print("release")
@@ -33,6 +38,11 @@ while True:
         # if m.playing != note:
         #     m.play_note(note)
 
-        bend_val = clamp((cur_pos-press_pos) * 2 , -8192, 8191)
-        m.bend(bend_val)
+        # bend_val = clamp((cur_pos-press_pos) * 2 , -8192, 8191)
+        # m.bend(bend_val)
+    if time.time() - prev_press > TIMEOUT:
+        print('TIMEOUT')
+        prev_press = time.time()
+        p.reset_state()
+
     
