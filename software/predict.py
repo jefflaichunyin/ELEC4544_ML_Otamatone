@@ -20,17 +20,17 @@ class Note_Predictor:
     #     return self.clf.predict([[position]])[0]
 
     # predict with NN
-    def __init__(self, midi_file) -> None:
-        self.model = load_model('trained_model.h5')
+    def __init__(self, midi_file = None) -> None:
         self.win_size_max = 3
         self.seq = [0 for x in range(self.win_size_max)]
-        f = mido.MidiFile('1.mid')
-        self.midi_notes = list(map(lambda x: x.note, filter(lambda x : x.velocity == 80, f.tracks[0][11:-1])))
-        self.init_decision_tree()
+        self.model = load_model('trained_model.h5')
+        self.dt = None
+        if midi_file:
+            self.init_decision_tree(midi_file)
 
     def reset_state(self):
         self.seq = [0 for x in range(self.win_size_max)]
-        
+
     def push_prediction(self, note):
         # self.seq.pop(-1)
         # self.seq = [note] + self.seq
@@ -41,7 +41,9 @@ class Note_Predictor:
             self.seq.pop(0)
             self.seq = self.seq + [note] 
 
-    def init_decision_tree(self):
+    def init_decision_tree(self, midi_file):
+        f = mido.MidiFile(midi_file)
+        self.midi_notes = list(map(lambda x: x.note, filter(lambda x : x.velocity == 80, f.tracks[0][11:-1])))
         self.dt = tree.DecisionTreeClassifier()
         song_len = len(self.midi_notes)
         transitions = []
@@ -57,16 +59,11 @@ class Note_Predictor:
 
     def predict_note(self, position):
         notes = [60,62,64,65,67,69,71,72]
-        enc = preprocessing.LabelEncoder()
-        enc.fit(notes)
-        predictions = self.model.predict([position])
-        predicted = np.argmax(predictions)
-        note = enc.inverse_transform([predicted])[0]
-        if sum(self.seq) == 0:
+        if self.dt is None or sum(self.seq) == 0:
             # no history yet, rely on NN solely
-            predictions = self.model.predict([position])
-            print('no history predict with NN', predictions)
-            predicted = np.argmax(predictions)
+            nn_prob = self.model.predict([position])
+            print('predict with NN', np.array_str(nn_prob, precision=2))
+            predicted = np.argmax(nn_prob)
             note = notes[predicted]
         else:
             # use decision tree to help
