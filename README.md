@@ -1,4 +1,5 @@
 # COMP4544_Otamatone
+Predict Otamatone output pitch from press position using machine learning algorithm.
 
 ## Dependencies
 ```pip install pygame numpy matplotlib sklearn tensorflow pyserial mido```
